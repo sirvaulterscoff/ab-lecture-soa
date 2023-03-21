@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="appName" value="ab"/>
+    <property name="jsonFormat" value="true"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <Pattern>
+                %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>127.0.0.1:5012</destination>
+
+        <!-- encoder is required -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" >
+            <providers>
+                <mdc/>
+                <logLevel/>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="LOGSTASH_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <providers>
+                <mdc/>
+                <logLevel/>
+            </providers>
+
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC_LOGSTASH_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="LOGSTASH_CONSOLE"/>
+        <neverBlock>true</neverBlock>
+    </appender>
+
+    <root level="INFO">
+<!--                <appender-ref ref="ASYNC_LOGSTASH_CONSOLE"/>-->
+                <appender-ref ref="CONSOLE"/>
+                <appender-ref ref="stash"/>
+    </root>
+    <logger name="ru.tinkoff" level="TRACE"/>
+</configuration>
